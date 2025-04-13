@@ -1,15 +1,27 @@
 pipeline {
     agent any
 
+    environment {
+        VIRTUAL_ENV = "${WORKSPACE}/venv"
+        PATH = "${VIRTUAL_ENV}/bin:${env.PATH}"
+    }
+
     stages {
         stage('Cloner le dépôt') {
             steps {
-                git 'https://github.com/Issakha23/myapp.git'
+                git url: 'https://github.com/Issakha23/myapp.git'
+            }
+        }
+
+        stage('Créer un environnement virtuel') {
+            steps {
+                sh 'python3 -m venv venv'
             }
         }
 
         stage('Installation des dépendances') {
             steps {
+                sh 'pip install --upgrade pip'
                 sh 'pip install -r requirements.txt'
             }
         }
@@ -22,17 +34,18 @@ pipeline {
 
         stage('Déploiement') {
             steps {
-                sh 'ansible-playbook deploy.yml --ask-vault-pass'
+                sh 'ansible-playbook -i hosts deploy.yml --ask-vault-pass'
             }
         }
     }
 
     post {
-        failure {
-            echo "Le pipeline a échoué !"
-        }
         success {
-            echo "Pipeline réussi !"
+            echo '✅ Pipeline exécuté avec succès !'
+        }
+        failure {
+            echo '❌ Le pipeline a échoué.'
         }
     }
 }
+
