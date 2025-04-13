@@ -1,0 +1,28 @@
+---
+- name: Déployer l'application Flask
+  hosts: all
+  become: yes
+  tasks:
+    - name: Copier les fichiers de l'application Flask
+      copy:
+        src: /home/ids/myapp/
+        dest: /home/ids/myapp/
+        owner: root
+        group: root
+        mode: '0755'
+
+    - name: Installer les dépendances Python
+      pip:
+        requirements: /opt/myapp/requirements.txt
+        virtualenv: /opt/myapp/venv
+        virtualenv_python: python3
+
+    - name: Lancer Gunicorn avec l'application Flask
+      shell: |
+        source /opt/myapp/venv/bin/activate
+        gunicorn --workers 3 --bind 0.0.0.0:8000 app:app
+      args:
+        chdir: /opt/myapp
+      become_user: root
+      async: 0
+      poll: 0
