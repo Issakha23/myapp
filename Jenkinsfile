@@ -32,10 +32,6 @@ pipeline {
             }
         }
 
-        stage('Déploiement') {
-            steps {
-                sh 'ansible-playbook -i inventory deploy.yml'
-            }
         }
     }
 
