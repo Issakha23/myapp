@@ -34,7 +34,7 @@ pipeline {
 
         stage('Déploiement') {
             steps {
-                sh 'ansible-playbook -i hosts deploy.yml --ask-vault-pass'
+                sh 'ansible-playbook -i inventory deploy.yml --ask-vault-pass'
             }
         }
     }
