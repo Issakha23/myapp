@@ -31,7 +31,10 @@ pipeline {
                 sh 'pytest'
             }
         }
-
+	stage('Déploiement') {
+            steps {
+                sh 'ansible-playbook -i hosts deploy.yml --ask-vault-pass'
+            }
         }
     }
 
